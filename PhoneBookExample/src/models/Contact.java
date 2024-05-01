@@ -3,18 +3,19 @@ package models;
 public class Contact {
 	
 	private int id;
-	private String firstname, lastname, phoneNumber;
+	private String firstname, lastname, phoneNumber, email;
 	
 	public Contact() {
 		super();
 	}
 
-	public Contact(int id, String firstname, String lastname, String phoneNumber) {
+	public Contact(int id, String firstname, String lastname, String phoneNumber, String email) {
 		super();
 		this.id = id;
 		this.firstname = firstname;
 		this.lastname = lastname;
 		this.phoneNumber = phoneNumber;
+		this.email = email;
 	}
 
 	public int getId() {
@@ -47,6 +48,14 @@ public class Contact {
 
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
+	}
+	
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 	
 	

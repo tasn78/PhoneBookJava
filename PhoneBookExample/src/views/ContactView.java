@@ -1,151 +1,197 @@
 package views;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.DefaultTableModel;
+
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.event.*;
 import java.util.List;
 import models.*;
 
 public class ContactView extends JFrame {
 
-	// create component references
-	private JTextField txtFirstname, txtLastname, txtPhoneNumber;
-	private JButton btnAdd, btnUpdate, btnDelete, btnSearch, btnLogout;
-	private JList<String> contactList;
-	
-	private DefaultListModel<String> listModel;
-	
-	// constructor
-	public ContactView() {
+    private JTextField txtFirstname, txtLastname, txtPhoneNumber, txtEmail;
+    private JButton btnAdd, btnUpdate, btnDelete, btnSearch, btnLogout, btnExport;
+    private JTable contactTable;
+    private DefaultTableModel tableModel;
+    private JLabel labelContactsList;
 
-		setTitle("Phonebook");
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-		
+    public ContactView() {
+        setTitle("Phonebook");
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        initializeComponents();
+        layoutComponents();
+        pack();
+        setLocationRelativeTo(null);
+    }
 
-		// initialize the components
-		listModel = new DefaultListModel<>();
-		setContactList(new JList<>(listModel));
-		
-		txtFirstname = new JTextField(20);
-		txtLastname = new JTextField(20);
-		txtPhoneNumber = new JTextField(20);
-		btnAdd = new JButton("Add");
-		btnUpdate = new JButton("Update");
-		btnDelete = new JButton("Delete");
-		btnSearch = new JButton("Search");
-		btnLogout = new JButton("Logout");
-		contactList = new JList<String>();
-		contactList.setModel(listModel);
-		
-		// input panel
-		JPanel inputPanel = new JPanel();
-		inputPanel.setLayout(new GridLayout(4, 2));
-		inputPanel.add(new JLabel("Firstname:"));
-		inputPanel.add(txtFirstname);
-		inputPanel.add(new JLabel("Lastname:"));
-		inputPanel.add(txtLastname);
-		inputPanel.add(new JLabel("Phone number:"));
-		inputPanel.add(txtPhoneNumber);
-		inputPanel.add(btnAdd);
-		inputPanel.add(btnUpdate);
-		
-		// list panel
-		JPanel listPanel = new JPanel(new GridLayout(2, 1));
-		listPanel.add(new JLabel("Contact list"));
-		listPanel.add(new JScrollPane(getContactList()));
-		
-		
-		// buttons panel
-		JPanel buttonPanel = new JPanel();
-		buttonPanel.add(btnSearch);
-		buttonPanel.add(btnDelete);
-		buttonPanel.add(btnLogout);
-		
-		// add panel to the window
-		setLayout(new BorderLayout());
-		add(inputPanel, BorderLayout.NORTH);
-		add(listPanel, BorderLayout.CENTER);
-		add(buttonPanel, BorderLayout.SOUTH);
-		
-		// getContacts(loadContacts());
-		
-		
-		pack();
-		setLocationRelativeTo(null);
-	}
-	
-	public void addAddButtonListener(ActionListener listener) {
-		btnAdd.addActionListener(listener);
-	}
-	
-	public void addUpdateButtonListener(ActionListener listener) {
-		btnUpdate.addActionListener(listener);
-	}
-	
-	public void addDeleteButtonListener(ActionListener listener) {
-		btnDelete.addActionListener(listener);
-	}
-	
-	public void addSearchButtonListener(ActionListener listener) {
-		btnSearch.addActionListener(listener);
-	}
-	
-	public void addLogoutButtonListener(ActionListener listener) {
-		btnLogout.addActionListener(listener);
-	}
-	
-	public void addContactListListener(ListSelectionListener listener) {
-		contactList.addListSelectionListener(listener);
-	}
-	
-	// getters
-	public JTextField getFirstNameField() {
-		return txtFirstname;
-	}
-	
-	public String getFirstName() {
-		return getFirstNameField().getText();
-	}
-	
-	public JTextField getLastNameField() {
-		return txtLastname;
-	}
-	public String getLastName() {
-		return getLastNameField().getText();
-	}
-	
-	public JTextField getPhoneNumberField() {
-		return txtPhoneNumber;
-	}
-	public String getPhoneNumber() {
-		return getPhoneNumberField().getText();
-	}
-	
-	public void setContactsToModel(List<Contact> contacts) {
-	    listModel.clear();
-	    for (Contact c : contacts) {
-	        // Using HTML to format the text within list elements from chatGPT
-	        String formattedText = "<html>" + c.getFirstname() + "&nbsp;&nbsp;" + c.getLastname() + "&nbsp;&nbsp; - " + c.getPhoneNumber() + "</html>";
-	        listModel.addElement(formattedText);
-	    }
-	}
-	
-	public void setContactList(JList<String> contactList) {
-		this.contactList = contactList;
-	}
-	
-	public JList<String> getContactList(){
-		
-		return contactList;
-	}
-	
-//	private List<Contact> loadContacts() {
-//		
-//		ContactDataAccess data = new ContactDataAccess();
-//		
-//		List<Contact> c = data.getContacts(UserDataAccess.currentUserId);
-//		return c;
-//	}
+    private void initializeComponents() {
+        txtFirstname = new JTextField(20);
+        txtLastname = new JTextField(20);
+        txtPhoneNumber = new JTextField(20);
+        txtEmail = new JTextField(20);
 
+        btnAdd = new JButton("Add");
+        btnAdd.setFont(new Font("Arial", Font.BOLD, 12));
+        btnUpdate = new JButton("Update");
+        btnUpdate.setFont(new Font("Arial", Font.BOLD, 12));
+        btnDelete = new JButton("Delete");
+        btnDelete.setFont(new Font("Arial", Font.BOLD, 12));
+        btnSearch = new JButton("Search");
+        btnSearch.setFont(new Font("Arial", Font.BOLD, 12));
+        btnLogout = new JButton("Logout");
+        btnLogout.setFont(new Font("Arial", Font.BOLD, 12));
+        btnExport = new JButton("Export");
+        btnLogout.setFont(new Font("Arial", Font.BOLD, 12));
+        
+        // Set color for buttons
+        btnAdd.setBackground(new Color(0, 150, 255)); // light blue
+        btnAdd.setForeground(Color.WHITE);
+        btnUpdate.setBackground(new Color(0, 163, 108)); // jade
+        btnUpdate.setForeground(Color.WHITE);
+        btnDelete.setBackground(new Color(255, 0, 73)); // red
+        btnDelete.setForeground(Color.BLACK);
+        btnSearch.setBackground(new Color(243, 246, 4)); // yellow
+        btnSearch.setForeground(Color.BLACK);
+        btnLogout.setBackground(new Color(4, 60, 246)); // blue
+        btnLogout.setForeground(Color.WHITE);
+        btnExport.setBackground(Color.BLACK);
+        btnExport.setForeground(Color.WHITE);
+        
+        // Set all buttons to opaque to show background color
+        btnAdd.setOpaque(true);
+        btnAdd.setBorderPainted(true);
+        btnUpdate.setOpaque(true);
+        btnUpdate.setBorderPainted(true);
+        btnDelete.setOpaque(true);
+        btnDelete.setBorderPainted(true);
+        btnSearch.setOpaque(true);
+        btnSearch.setBorderPainted(true);
+        btnLogout.setOpaque(true);
+        btnLogout.setBorderPainted(true);
+        btnExport.setOpaque(true);
+        btnExport.setBorderPainted(true);
+        
+        // Initialize table model and table
+        tableModel = new DefaultTableModel(new Object[]{"First name", "Last name", "Phone Number", "E-mail"}, 0);
+        contactTable = new JTable(tableModel);
+        contactTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        
+        // Set up a cell renderer to center text in each cell from ChatGPT
+        DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+        centerRenderer.setHorizontalAlignment(JLabel.CENTER);
+        
+        contactTable.getColumnModel().getColumn(0).setCellRenderer(centerRenderer);
+        contactTable.getColumnModel().getColumn(1).setCellRenderer(centerRenderer);
+        contactTable.getColumnModel().getColumn(2).setCellRenderer(centerRenderer);
+        contactTable.getColumnModel().getColumn(3).setCellRenderer(centerRenderer);
+        
+        // Initialize the label for the contacts list title
+        labelContactsList = new JLabel("Contacts List");
+        labelContactsList.setFont(new Font("Arial", Font.BOLD, 18));
+        labelContactsList.setHorizontalAlignment(JLabel.CENTER);
+        labelContactsList.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));  // Adds space above the title
+    }
+
+    private void layoutComponents() {
+        JPanel inputPanel = new JPanel(new GridLayout(5, 2));
+        inputPanel.add(new JLabel("\tFirst name:"));
+        inputPanel.add(txtFirstname);
+        inputPanel.add(new JLabel("\tLast name:"));
+        inputPanel.add(txtLastname);
+        inputPanel.add(new JLabel("\tPhone number:"));
+        inputPanel.add(txtPhoneNumber);
+        inputPanel.add(new JLabel("\tEmail:"));
+        inputPanel.add(txtEmail);
+        inputPanel.add(btnAdd);
+        inputPanel.add(btnUpdate);
+
+        JScrollPane scrollPane = new JScrollPane(contactTable);
+        JPanel listPanel = new JPanel(new BorderLayout());
+        listPanel.setBackground(Color.WHITE);
+        listPanel.add(labelContactsList, BorderLayout.NORTH);
+        listPanel.add(scrollPane, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(btnSearch);
+        buttonPanel.add(btnDelete);
+        buttonPanel.add(btnExport);
+        buttonPanel.add(btnLogout);
+
+        setLayout(new BorderLayout());
+        add(inputPanel, BorderLayout.NORTH);
+        add(listPanel, BorderLayout.CENTER);
+        add(buttonPanel, BorderLayout.SOUTH);
+        
+        setLocationRelativeTo(null);
+    }
+
+    public JTable getContactTable() {
+        return contactTable;
+    }
+
+    public void addAddButtonListener(ActionListener listener) {
+        btnAdd.addActionListener(listener);
+    }
+
+    public void addUpdateButtonListener(ActionListener listener) {
+        btnUpdate.addActionListener(listener);
+    }
+
+    public void addDeleteButtonListener(ActionListener listener) {
+        btnDelete.addActionListener(listener);
+    }
+
+    public void addSearchButtonListener(ActionListener listener) {
+        btnSearch.addActionListener(listener);
+    }
+
+    public void addLogoutButtonListener(ActionListener listener) {
+        btnLogout.addActionListener(listener);
+    }
+    
+    public void addExportButtonListener(ActionListener listener) {
+        btnExport.addActionListener(listener);
+    }
+
+    public JTextField getFirstNameField() {
+        return txtFirstname;
+    }
+
+    public String getFirstName() {
+        return getFirstNameField().getText();
+    }
+
+    public JTextField getLastNameField() {
+        return txtLastname;
+    }
+
+    public String getLastName() {
+        return getLastNameField().getText();
+    }
+
+    public JTextField getPhoneNumberField() {
+        return txtPhoneNumber;
+    }
+
+    public String getPhoneNumber() {
+        return getPhoneNumberField().getText();
+    }
+    
+    public JTextField getEmailField() {
+        return txtEmail;
+    }
+
+    public String getEMail() {
+        return getEmailField().getText();
+    }
+    
+
+    public void setContactsToModel(List<Contact> contacts) {
+        tableModel.setRowCount(0); // Clear existing data
+        for (Contact c : contacts) {
+            tableModel.addRow(new Object[]{c.getFirstname(), c.getLastname(), c.getPhoneNumber(), c.getEmail()});
+        }
+    }
 }

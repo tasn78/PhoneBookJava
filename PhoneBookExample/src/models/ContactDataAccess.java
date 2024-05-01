@@ -19,13 +19,14 @@ public class ContactDataAccess {
 	public boolean addContact(Contact contact) {
 
 		try {
-			String query = "INSERT INTO tb_contacts (firstname, lastname, phonenumber, user) VALUES (?, ?, ?, ?)";
+			String query = "INSERT INTO tb_contacts (firstname, lastname, phonenumber, email, user) VALUES (?, ?, ?, ?, ?)";
 			PreparedStatement stm = connect.prepareStatement(query);
 
 			stm.setString(1, contact.getFirstname());
 			stm.setString(2, contact.getLastname());
 			stm.setString(3, contact.getPhoneNumber());
-			stm.setInt(4, UserDataAccess.currentUserId);
+			stm.setString(4, contact.getEmail());
+			stm.setInt(5, UserDataAccess.currentUserId);
 
 			int row = stm.executeUpdate();
 
@@ -42,14 +43,15 @@ public class ContactDataAccess {
 	public boolean updateContact(Contact contact) {
 
 		try {
-			String query = "UPDATE tb_contacts SET firstname=?, lastname=?, phonenumber=? WHERE id=? AND user=?";
+			String query = "UPDATE tb_contacts SET firstname=?, lastname=?, phonenumber=?, email=? WHERE id=? AND user=?";
 			PreparedStatement stm = connect.prepareStatement(query);
 
 			stm.setString(1, contact.getFirstname());
 			stm.setString(2, contact.getLastname());
 			stm.setString(3, contact.getPhoneNumber());
-			stm.setInt(4, contact.getId());
-			stm.setInt(5, UserDataAccess.currentUserId);
+			stm.setString(4, contact.getEmail());
+			stm.setInt(5, contact.getId());
+			stm.setInt(6, UserDataAccess.currentUserId);
 
 			int row = stm.executeUpdate();
 
@@ -101,8 +103,9 @@ public class ContactDataAccess {
 				String firstName = result.getString("firstname");
 				String lastName = result.getString("lastname");
 				String phoneNumber = result.getString("phonenumber");
+				String email = result.getString("email");
 
-				Contact contact = new Contact(contactId, firstName, lastName, phoneNumber);
+				Contact contact = new Contact(contactId, firstName, lastName, phoneNumber, email);
 
 				contactList.add(contact);
 			}
